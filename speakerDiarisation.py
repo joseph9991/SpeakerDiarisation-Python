@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 
 import os, sys
+import librosa
 import requests, json
 import datetime
+import warnings
+from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 
 
-class Transcribe:
+class SpeakerDiarisation:
+
 	def __init__(self,file_name):
 		self.file_name = file_name
+
 
 	# Validates the file, checks for the valid file extension and returns audio-format
 	def identifyFormat(self):
@@ -23,17 +28,28 @@ class Transcribe:
 			error = 'File extension ' + file_extension + ' not valid'
 			raise AssertionError(error)
 
-	# Opens the File, sets headers and sends POST request to IBM Watson, returns JSON response 
-	def request(self,audio_format):
-		url = "https://api.au-syd.speech-to-text.watson.cloud.ibm.com/instances/8d79c68b-01d0-4fbd-8ef7-c63817d41397/v1/recognize?speaker_labels=true"
-		auth = ('apikey', '8ecjDiukKvweVEqbJfGflJ1bQH66eYIQelXxeHoZLIk5')
 
-		m4a = 'm4a'
+	# Converts m4a file to wav, stores is as a temporary file, and replaces the current filename with temp.wav
+	def convert_m4a_to_wav(self):
+		data, sampling_rate = librosa.load(self.file_name)
+		librosa.output.write_wav('temp.wav', data, sampling_rate)
+		self.file_name = 'temp.wav'
+
+
+	# Opens the File, sets headers, sends POST request to IBM Watson Text-to-Speech API, & returns JSON response 
+	def request(self,audio_format):
+		load_dotenv()
+
+		url = os.getenv('SPEECH_TO_TEXT_URL')
+
+		api_key = os.getenv('SPEECH_TO_TEXT_APIKEY')
+		auth = ('apikey', api_key)
+
 		headers_key = 'Content-Type'
 
-		if audio_format is m4a:	
-			# TODO: Convert m4a to wav
-			pass
+		if audio_format == 'm4a':	
+			self.convert_m4a_to_wav()
+			headers_value = 'audio/wav'
 		else:
 			headers_value = 'audio/' + audio_format
 		
@@ -51,9 +67,12 @@ class Transcribe:
 		except Exception as err:
 		    print(f'Other error occurred: {err}')
 
+
+	# Converts Seconds to Minutes:Seconds OR Hours:Minutes:Seconds
 	def seconds_to_minutes(self,seconds):
 		time = str(datetime.timedelta(seconds=round(seconds,0)))
 		return time[2:] if time[0] == '0' else time
+
 
 	# Prints the desired Output -- format "Person Number - time-time" --example "Person 1 - 1:00-1:52" 
 	def printResponse(self, response):
@@ -66,39 +85,43 @@ class Transcribe:
 				speakers.add(response_speakers[i]['speaker'] + 1)
 				current_speaker = response_speakers[i]['speaker'] + 1				
 				if i > 0:
-					# print(str(response_speakers[i-1]['to']).replace('.',':'))
 					print(self.seconds_to_minutes(response_speakers[i-1]['to']))
-				#print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
-				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + 
+					self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
 
 			elif response_speakers[i]['final'] == True:
 				print(self.seconds_to_minutes(response_speakers[i-1]['to']))
-				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + 
+					self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
 				print(self.seconds_to_minutes(response_speakers[i]['to']))
 
 			else:
 				if current_speaker != response_speakers[i]['speaker'] + 1: 
 					current_speaker = response_speakers[i]['speaker'] + 1
 					print(self.seconds_to_minutes(response_speakers[i-1]['to']))
-					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + 
+						self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+		os.remove('temp.wav')
 
 
 if __name__ == "__main__":
 	file_name = sys.argv[1]
 
+	# For ignoring UserWarnings
+	warnings.filterwarnings("ignore")
 
-	obj = Transcribe(file_name)
+	speakerDiarisation = SpeakerDiarisation(file_name)
 	
-	#audio_format = obj.identifyFormat()
+	audio_format = speakerDiarisation.identifyFormat()
 	# print(audio_format)
 
-	#response = obj.request(audio_format)
+	response = speakerDiarisation.request(audio_format)
 	# print(response)
 
-	with open("response.json", "r") as read_file:
-		response = json.load(read_file)
+	# with open("response.json", "r") as read_file:
+	# 	response = json.load(read_file)
 	
-	obj.printResponse(response)
+	speakerDiarisation.printResponse(response)
 
 
 
