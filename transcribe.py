@@ -54,19 +54,36 @@ class Transcribe:
 	def printResponse(self, response):
 		response_speakers = response['speaker_labels']
 		speakers = set()
+		current_speaker = 0
 		for i in range(len(response_speakers)):
 
 			if (response_speakers[i]['speaker'] + 1) not in speakers:
 				if i == 0:
 					speakers.add(response_speakers[i]['speaker'] + 1)
+					current_speaker = response_speakers[i]['speaker'] + 1
 					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
 				else:
 					speakers.add(response_speakers[i]['speaker'] + 1)
+					current_speaker = response_speakers[i]['speaker'] + 1
 					print(str(response_speakers[i-1]['to']).replace('.',':'))
 					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
 			
 			elif response_speakers[i]['final'] == True:
-					print("%.2f" % str(response_speakers[i-1]['to']).replace('.',':'))
+				print(str(response_speakers[i-1]['to']).replace('.',':'))
+				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
+				print(str("%.2f" % response_speakers[i]['to']).replace('.',':'))
+
+			else:
+				if current_speaker != response_speakers[i]['speaker'] + 1: 
+					current_speaker = response_speakers[i]['speaker'] + 1
+					print(str(response_speakers[i-1]['to']).replace('.',':'))
+					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
+				
+				# else:	
+				# 	if i == len(response_speakers) - 1:
+				# 		print(str("%.2f" % response_speakers[i]['to']).replace('.',':'))
+				# 		print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
+				# 	# pass
 
 if __name__ == "__main__":
 	file_name = sys.argv[1]
@@ -74,12 +91,15 @@ if __name__ == "__main__":
 
 	obj = Transcribe(file_name)
 	
-	audio_format = obj.identifyFormat()
+	#audio_format = obj.identifyFormat()
 	# print(audio_format)
 
-	response = obj.request(audio_format)
+	#response = obj.request(audio_format)
 	# print(response)
 
+	with open("response.json", "r") as read_file:
+		response = json.load(read_file)
+	
 	obj.printResponse(response)
 
 
