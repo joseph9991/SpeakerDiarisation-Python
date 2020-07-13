@@ -26,31 +26,34 @@ Formats supported:
 * mpeg
 
 #### Follow the below Steps to run the program:
-Create an IBM Cloud account & enable IBM Watson Speech-to-Text API. Download the credentials file, which will have the name as "ibm-credentials.env".  
+1. Create an IBM Cloud account & enable IBM Watson Speech-to-Text API. 
+2. Download the credentials file, which will have the name as "ibm-credentials.env".  
 (I can't stress enough on how important the documentation of the API is. Please, try running the curl commands before you run the program.)
 
-IMPORTANT: Place the file in the same directory as the "speakerDiarisation.py" and rename the file to ".env"  
-Also, you need to append the argument into the URL in the env file as below. Make sure you have instance_ID as your instance only. 
+3. IMPORTANT: Place the file in the same directory as the "speakerDiarisation.py" and rename the file to ".env".    
+
+
+4. Also, you need to append the argument into the URL in the env file as below. Make sure you have instance_ID as your instance only.   
+The ".env" should have content similar to:
 ```
+SPEECH_TO_TEXT_APIKEY=<APIKEY>
+SPEECH_TO_TEXT_IAM_APIKEY=<IAM_APIKEY>
 SPEECH_TO_TEXT_URL='https://api.au-syd.speech-to-text.watson.cloud.ibm.com/instances/<instance_ID>/v1/recognize?speaker_labels=true'
+SPEECH_TO_TEXT_AUTH_TYPE='iam'
 ```
+Please use it only for reference!! Stick with your own ".env" file!!
 
-Formats supported: 
-* mp3 
-* flac 
-* wav 
-* m4a
-* ogg
-* mpeg
+5. Execute the below commands to run on Linux Terminal or Windows CMD  
 
-```
 Linux 
+```
 sudo chmod +x speakerDiarisation.py
 pip3 install -r requirements.txt
 ./speakerDiarisation.py "Path/of/file.extension" 
 ```
-```
 Windows
+
+```
 pip install -r requirements.txt
 python speakerDiarisation.py "Path\of\file.extension"
 ```
