@@ -59,14 +59,14 @@ class Transcribe:
 			if (response_speakers[i]['speaker'] + 1) not in speakers:
 				if i == 0:
 					speakers.add(response_speakers[i]['speaker'] + 1)
-					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str(response_speakers[i]['from']).replace('.',':') + '-', end = "")
+					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
 				else:
 					speakers.add(response_speakers[i]['speaker'] + 1)
 					print(str(response_speakers[i-1]['to']).replace('.',':'))
-					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str(response_speakers[i]['from']).replace('.',':') + '-', end = "")
+					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
 			
 			elif response_speakers[i]['final'] == True:
-					print(str(response_speakers[i-1]['to']).replace('.',':'))
+					print("%.2f" % str(response_speakers[i-1]['to']).replace('.',':'))
 
 if __name__ == "__main__":
 	file_name = sys.argv[1]
