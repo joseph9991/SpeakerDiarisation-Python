@@ -2,6 +2,7 @@
 
 import os, sys
 import requests, json
+import datetime
 from requests.exceptions import HTTPError
 
 
@@ -50,6 +51,10 @@ class Transcribe:
 		except Exception as err:
 		    print(f'Other error occurred: {err}')
 
+	def seconds_to_minutes(self,seconds):
+		time = str(datetime.timedelta(seconds=round(seconds,0)))
+		return time[2:] if time[0] == '0' else time
+
 	# Prints the desired Output -- format "Person Number - time-time" --example "Person 1 - 1:00-1:52" 
 	def printResponse(self, response):
 		response_speakers = response['speaker_labels']
@@ -61,19 +66,21 @@ class Transcribe:
 				speakers.add(response_speakers[i]['speaker'] + 1)
 				current_speaker = response_speakers[i]['speaker'] + 1				
 				if i > 0:
-					print(str(response_speakers[i-1]['to']).replace('.',':'))
-				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
-			
+					# print(str(response_speakers[i-1]['to']).replace('.',':'))
+					print(self.seconds_to_minutes(response_speakers[i-1]['to']))
+				#print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
+				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+
 			elif response_speakers[i]['final'] == True:
-				print(str(response_speakers[i-1]['to']).replace('.',':'))
-				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
-				print(str("%.2f" % response_speakers[i]['to']).replace('.',':'))
+				print(self.seconds_to_minutes(response_speakers[i-1]['to']))
+				print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
+				print(self.seconds_to_minutes(response_speakers[i]['to']))
 
 			else:
 				if current_speaker != response_speakers[i]['speaker'] + 1: 
 					current_speaker = response_speakers[i]['speaker'] + 1
-					print(str(response_speakers[i-1]['to']).replace('.',':'))
-					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + str("%.2f" % response_speakers[i]['from']).replace('.',':') + '-', end = "")
+					print(self.seconds_to_minutes(response_speakers[i-1]['to']))
+					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
 
 
 if __name__ == "__main__":
