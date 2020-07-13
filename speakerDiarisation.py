@@ -17,7 +17,7 @@ class SpeakerDiarisation:
 
 	# Validates the file, checks for the valid file extension and returns audio-format
 	def identifyFormat(self):
-		valid_extensions = ('.mp3','.ogg','.wav','.m4a','.flac')
+		valid_extensions = ('.mp3','.ogg','.wav','.m4a','.flac', '.mpeg')
 		file_path, file_extension = os.path.splitext(self.file_name)
 		if file_extension in valid_extensions:
 			return file_extension[1:]
