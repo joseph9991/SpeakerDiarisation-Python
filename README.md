@@ -24,6 +24,7 @@ Formats supported:
 * m4a
 * ogg
 * mpeg
+* aac
 
 #### Follow the below Steps to run the program:
 1. Create an IBM Cloud account & enable IBM Watson Speech-to-Text API. 
@@ -49,7 +50,7 @@ Linux
 ```
 sudo chmod +x speakerDiarisation.py
 pip3 install -r requirements.txt
-./speakerDiarisation.py "Path/of/file.extension" 
+./speakerDiarisation.py "/Path/of/file.extension" 
 ```
 Windows
 
@@ -58,4 +59,4 @@ pip install -r requirements.txt
 python speakerDiarisation.py "Path\of\file.extension"
 ```
 
-Sample Recordings have been provided with different formats(ogg, wav, m4a, flac) under the recordings folder. 
+Sample Recordings with different formats(ogg, wav, m4a, flac) under the recordings folder as well as sample Responses have been provided under the responses folder. 
