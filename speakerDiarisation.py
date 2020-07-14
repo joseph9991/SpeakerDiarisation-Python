@@ -4,6 +4,7 @@ import os, sys
 import librosa
 import requests, json
 import datetime
+import time
 import warnings
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError
@@ -17,7 +18,7 @@ class SpeakerDiarisation:
 
 	# Validates the file, checks for the valid file extension and returns audio-format
 	def identifyFormat(self):
-		valid_extensions = ('.mp3','.ogg','.wav','.m4a','.flac', '.mpeg')
+		valid_extensions = ('.mp3','.ogg','.wav','.m4a','.flac', '.mpeg', '.aac')
 		file_path, file_extension = os.path.splitext(self.file_name)
 		if file_extension in valid_extensions:
 			return file_extension[1:]
@@ -30,10 +31,14 @@ class SpeakerDiarisation:
 
 
 	# Converts m4a file to wav, stores is as a temporary file, and replaces the current filename with temp.wav
-	def convert_m4a_to_wav(self):
-		data, sampling_rate = librosa.load(self.file_name)
+	def convert_file_to_wav(self):
+		print("Converting file to wav format...")
+		start_time = time.time()
+		data, sampling_rate = librosa.load(self.file_name,sr=16000)
 		librosa.output.write_wav('temp.wav', data, sampling_rate)
 		self.file_name = 'temp.wav'
+		end_time = time.time()
+		print("Finished conversion to wav format in " + self.seconds_to_minutes(end_time - start_time) + " seconds")
 
 
 	# Opens the File, sets headers, sends POST request to IBM Watson Text-to-Speech API, & returns JSON response 
@@ -47,8 +52,8 @@ class SpeakerDiarisation:
 
 		headers_key = 'Content-Type'
 
-		if audio_format == 'm4a':	
-			self.convert_m4a_to_wav()
+		if audio_format == 'm4a' or audio_format == 'aac':	
+			self.convert_file_to_wav()
 			headers_value = 'audio/wav'
 		else:
 			headers_value = 'audio/' + audio_format
@@ -57,15 +62,21 @@ class SpeakerDiarisation:
 		data = open(self.file_name, 'rb').read()
 
 		try:
-		    response = requests.post(url=url,headers=headers,data=data,auth=auth)
-		    response.raise_for_status()
-		    jsonResponse = response.json()
-		    return jsonResponse
+			print("Sending Request to Watson Speech-to-text API...")
+			start_time = time.time()
+			response = requests.post(url=url,headers=headers,data=data,auth=auth)
+			end_time = time.time()
+			print("Time taken by API: " + self.seconds_to_minutes(end_time - start_time) + " minutes")
+			response.raise_for_status()
+			jsonResponse = response.json()
+			# with open('temp.json','w') as f:
+			# 	f.write(jsonResponse)
+			return jsonResponse
 
 		except HTTPError as http_err:
-		    print(f'HTTP error occurred: {http_err}')
+			print(f'HTTP error occurred: {http_err}')
 		except Exception as err:
-		    print(f'Other error occurred: {err}')
+			print(f'Other error occurred: {err}')
 
 
 	# Converts Seconds to Minutes:Seconds OR Hours:Minutes:Seconds
@@ -101,7 +112,9 @@ class SpeakerDiarisation:
 					print(self.seconds_to_minutes(response_speakers[i-1]['to']))
 					print('Person ' + str(response_speakers[i]['speaker'] + 1) + ' - ' + 
 						self.seconds_to_minutes(response_speakers[i]['from']) + '-', end = "")
-		os.remove('temp.wav')
+
+		if (self.file_name) == 'temp.wav':
+			os.remove('temp.wav')
 
 
 if __name__ == "__main__":
