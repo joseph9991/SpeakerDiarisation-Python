@@ -18,13 +18,11 @@ That data is printed in the form as shown below:
   ![Output](output.png)
 
 Formats supported: 
-* mp3 
-* flac 
-* wav 
-* m4a
-* ogg
-* mpeg
-* aac
+* mp3      * ogg
+* flac     * mpeg
+* wav      * aac
+* m4a 
+
 
 #### Follow the below Steps to run the program:
 1. Create an IBM Cloud account & enable IBM Watson Speech-to-Text API. 
