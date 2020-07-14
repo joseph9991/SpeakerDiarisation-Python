@@ -2,7 +2,7 @@
 
 **Speaker Diarization** is the process of segmenting and clustering a speech recording into homogeneous regions and answers the question “who spoke when” without any prior knowledge about the speakers. A typical diarization system performs three basic tasks. Firstly, it discriminates speech segments from the non-speech ones. Secondly, it detects speaker change points to segment the audio data. Finally, it groups these segmented regions into speaker homogeneous clusters. 
 
-There are many Cloud Platforms which offer this service such as GCP, AWS, IBM, and many others. Some have paid subscription schemes and some are free. The one which caught my attention was IMB Cloud's Watson. Watson provides a free tier service with which we can make requests for 500 minutes a month!! They have direct URL access as well as with their Python SDK to the API.  
+There are many Cloud Platforms which offer this service such as GCP, AWS, IBM, and many others. Some have paid subscription schemes and some are free. The one which caught my attention was IBM Cloud's Watson. Watson provides a free tier service with which we can make requests for 500 minutes a month!! They have direct URL access as well as with their Python SDK to the API.  
 
 Go through the Watson Speech-to-text Documentation and play with the curl command to get a better understanding.
 
