@@ -30,7 +30,7 @@ class SpeakerDiarisation:
 			raise AssertionError(error)
 
 
-	# Converts m4a file to wav, stores is as a temporary file, and replaces the current filename with temp.wav
+	# Converts m4a/aac file to wav, stores is as a temporary file, and replaces the object's filename with temp.wav
 	def convert_file_to_wav(self):
 		print("Converting file to wav format...")
 		start_time = time.time()
