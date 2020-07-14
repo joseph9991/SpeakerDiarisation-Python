@@ -1,6 +1,6 @@
 # SpeakerDiarisation-Python
 
-**Speaker Diarization** is the process of segmenting and clustering a speech recording into homogeneous regions and answers the question “who spoke when” without any prior knowledge about the speakers. A typical diarization system performs three basic tasks. Firstly, it discriminates speech segments from the non-speech ones. Secondly, it detects speaker change points to segment the audio data. Finally, it groups these segmented regions into speaker homogeneous clusters. 
+**Speaker Diarisation** is the process of segmenting and clustering a speech recording into homogeneous regions and answers the question “who spoke when” without any prior knowledge about the speakers. A typical diarization system performs three basic tasks. Firstly, it discriminates speech segments from the non-speech ones. Secondly, it detects speaker change points to segment the audio data. Finally, it groups these segmented regions into speaker homogeneous clusters. 
 
 There are many Cloud Platforms which offer this service such as GCP, AWS, IBM, and many others. Some have paid subscription schemes and some are free. The one which caught my attention was IBM Cloud's Watson. Watson provides a free tier service with which we can make requests for 500 minutes a month!! They have direct URL access as well as with their Python SDK to the API.  
 
@@ -13,7 +13,7 @@ curl -X POST -u "apikey:<APIKEY>" --header "Content-Type: audio/wav" --data-bina
 Please note, the above command is just an example to show the argument used. Replace the APIKEY, filename and instance_ID accordingly.
 
 ### Usage:
-"speakerDiarisation.py" takes in input as media file from the cmd argument. The file and it's format are validated and is sent as a POST request to the API. The response received is shown in "response_wav.json" & "response_ogg.json" files. This response is printed by using a logic to determine how long a speaker speaks.  
+"speakerDiarisation.py" takes in input as media file from the commandline argument. The file and it's format are validated and is sent as a POST request to the API. The response received is shown in responses directory. This response is printed by using a logic to determine how long a speaker speaks.  
 That data is printed in the form as shown below:
   ![Output](output.png)
 
